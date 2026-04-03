@@ -13,11 +13,14 @@
 进入项目后，按以下顺序阅读：
 
 1. [AGENTS.md](D:/OneDrive/Vibe%20Coding/海龟汤游戏/AGENTS.md)
-2. [RESEARCH.md](D:/OneDrive/Vibe%20Coding/海龟汤游戏/RESEARCH.md)
-3. [PRD.md](D:/OneDrive/Vibe%20Coding/海龟汤游戏/PRD.md)
-4. [TECH_DESIGN.md](D:/OneDrive/Vibe%20Coding/海龟汤游戏/TECH_DESIGN.md)
+2. [PROJECT_STATUS.md](D:/OneDrive/Vibe%20Coding/海龟汤游戏/PROJECT_STATUS.md)
+3. [工作交接.md](D:/OneDrive/Vibe%20Coding/海龟汤游戏/工作交接.md)
+4. [NEXT_AGENT_FRONTEND_CHECKIN_PLAN.md](D:/OneDrive/Vibe%20Coding/海龟汤游戏/NEXT_AGENT_FRONTEND_CHECKIN_PLAN.md)
+5. [RESEARCH.md](D:/OneDrive/Vibe%20Coding/海龟汤游戏/RESEARCH.md)
+6. [PRD.md](D:/OneDrive/Vibe%20Coding/海龟汤游戏/PRD.md)
+7. [TECH_DESIGN.md](D:/OneDrive/Vibe%20Coding/海龟汤游戏/TECH_DESIGN.md)
 
-不要跳过 `PRD.md` 和 `TECH_DESIGN.md` 直接改代码。
+不要跳过 `PROJECT_STATUS.md`、`工作交接.md`、`NEXT_AGENT_FRONTEND_CHECKIN_PLAN.md`、`PRD.md` 和 `TECH_DESIGN.md` 直接改代码。
 
 ---
 
