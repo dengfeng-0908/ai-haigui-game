@@ -1,4 +1,4 @@
-import type { TMessage } from "./message";
+import type { THighlightedClue, TMessage } from "./message";
 import type { TStoryPreview } from "./story";
 
 export type TAskResponse = {
@@ -28,6 +28,17 @@ export type TResultNavigationState = {
   solved: boolean;
   feedback?: string;
   playerCount?: number;
+  highlightedClues?: THighlightedClue[];
+  finalProposerName?: string;
+};
+
+export type TFinalProposal = {
+  guess: string;
+  proposerId: string;
+  proposerName: string;
+  approvals: string[];
+  requiredApprovals: number;
+  updatedAt: number;
 };
 
 export type TRoomPlayer = {
@@ -42,7 +53,9 @@ export type TRoomSnapshot = {
   messages: TMessage[];
   hintUsedCount: number;
   confirmedFacts: string[];
+  highlightedClues: THighlightedClue[];
   invalidQuestionCount: number;
+  finalProposal: TFinalProposal | null;
   status: "playing" | "finished";
   isProcessing: boolean;
 };

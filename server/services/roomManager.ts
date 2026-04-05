@@ -6,11 +6,32 @@ export type TMessage = {
   content: string;
   timestamp: number;
   playerName?: string;
+  channel?: "host" | "discussion";
+};
+
+export type THighlightedClue = {
+  id: string;
+  messageId: string;
+  content: string;
+  sourceRole: "user" | "assistant";
+  channel: "host" | "discussion";
+  playerName?: string;
+  pinnedByName?: string;
+  timestamp: number;
 };
 
 export type TRoomPlayer = {
   id: string;
   name: string;
+};
+
+export type TFinalProposal = {
+  guess: string;
+  proposerId: string;
+  proposerName: string;
+  approvals: string[];
+  requiredApprovals: number;
+  updatedAt: number;
 };
 
 export type TRoom = {
@@ -21,7 +42,9 @@ export type TRoom = {
   messages: TMessage[];
   hintUsedCount: number;
   confirmedFacts: string[];
+  highlightedClues: THighlightedClue[];
   invalidQuestionCount: number;
+  finalProposal: TFinalProposal | null;
   status: "playing" | "finished";
   isProcessing: boolean;
 };
@@ -43,7 +66,9 @@ export function createRoom(storyId: string) {
     messages: [],
     hintUsedCount: 0,
     confirmedFacts: [],
+    highlightedClues: [],
     invalidQuestionCount: 0,
+    finalProposal: null,
     status: "playing",
     isProcessing: false,
   };
@@ -76,6 +101,13 @@ export function removePlayer(roomId: string, playerId: string) {
   }
 
   room.players = room.players.filter((player) => player.id !== playerId);
+  if (room.finalProposal) {
+    room.finalProposal.approvals = room.finalProposal.approvals.filter((id) => id !== playerId);
+    room.finalProposal.requiredApprovals = getRequiredApprovalCount(room.players.length);
+    if (room.finalProposal.proposerId === playerId) {
+      room.finalProposal = null;
+    }
+  }
   if (room.players.length === 0 && room.status === "finished") {
     rooms.delete(roomId);
   }
@@ -91,6 +123,10 @@ export function pushMessage(roomId: string, message: TMessage) {
 
   room.messages.push(message);
   return room;
+}
+
+export function getRequiredApprovalCount(playerCount: number) {
+  return Math.max(1, Math.floor(playerCount / 2) + 1);
 }
 
 export function incrementHint(roomId: string) {
@@ -113,6 +149,23 @@ export function updateFacts(roomId: string, facts: string[]) {
   return room;
 }
 
+export function toggleHighlightedClue(roomId: string, clue: THighlightedClue) {
+  const room = rooms.get(roomId);
+  if (!room) {
+    return null;
+  }
+
+  const alreadyHighlighted = room.highlightedClues.some(
+    (item) => item.messageId === clue.messageId,
+  );
+
+  room.highlightedClues = alreadyHighlighted
+    ? room.highlightedClues.filter((item) => item.messageId !== clue.messageId)
+    : [clue, ...room.highlightedClues].slice(0, 8);
+
+  return room;
+}
+
 export function setInvalidQuestionCount(roomId: string, count: number) {
   const room = rooms.get(roomId);
   if (!room) {
@@ -120,6 +173,45 @@ export function setInvalidQuestionCount(roomId: string, count: number) {
   }
 
   room.invalidQuestionCount = count;
+  return room;
+}
+
+export function setFinalProposal(
+  roomId: string,
+  proposal: Omit<TFinalProposal, "requiredApprovals">,
+) {
+  const room = rooms.get(roomId);
+  if (!room) {
+    return null;
+  }
+
+  room.finalProposal = {
+    ...proposal,
+    requiredApprovals: getRequiredApprovalCount(room.players.length),
+  };
+  return room;
+}
+
+export function approveFinalProposal(roomId: string, playerId: string) {
+  const room = rooms.get(roomId);
+  if (!room || !room.finalProposal) {
+    return null;
+  }
+
+  if (!room.finalProposal.approvals.includes(playerId)) {
+    room.finalProposal.approvals.push(playerId);
+  }
+  room.finalProposal.requiredApprovals = getRequiredApprovalCount(room.players.length);
+  return room;
+}
+
+export function clearFinalProposal(roomId: string) {
+  const room = rooms.get(roomId);
+  if (!room) {
+    return null;
+  }
+
+  room.finalProposal = null;
   return room;
 }
 
@@ -141,5 +233,6 @@ export function finishRoom(roomId: string) {
 
   room.status = "finished";
   room.isProcessing = false;
+  room.finalProposal = null;
   return room;
 }
